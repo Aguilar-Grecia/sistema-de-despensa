@@ -47,3 +47,30 @@ class Venta:
         self.id_empleado = id_empleado
         self.total = total
 
+class Detalle_venta:
+    def __init__(self, id_detalleventa, id_venta, cantidad, id_producto, precio, subtotal):
+        self.id_venta = id_venta
+        self.cantidad = cantidad
+        self.id_producto = id_producto
+        self.precio = precio
+        self.subtotal = subtotal
+        self.id_detalleventa = id_detalleventa
+
+class Compra:
+    def __init__(self, id_compras, fecha_compra, id_provedor, id_empleado, total):
+        self.id_compras = id_compras
+        self.fecha_compra = fecha_compra
+        self.id_provedor = id_provedor
+        self.id_empleado = id_empleado
+        self.total = total
+
+class Detalle_compra
+    def __init__(self, id_detallecompra, id_compras, cantidad_compra, id_producto, precio_compra, sub_total, fecha_caducidad ):
+        self.id_detallecompra = id_detallecompra
+        self.id_compras = id_compras
+        self.cantidad_compra = cantidad_compra
+        self.id_producto = id_producto
+        self.precio_compra = precio_compra
+        self.sub_total = sub_total
+        self.fecha_caducidad = fecha_caducidad
+
