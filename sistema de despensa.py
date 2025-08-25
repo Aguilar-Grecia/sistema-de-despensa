@@ -14,7 +14,7 @@ class Producto:
         self.stock = stock
 
 class Cliente:
-    def __init__(self, nit,  nombre, telefono, direccion, correo):
+    def __init__(self, nit,  nombre_cliente, telefono, direccion, correo):
         self.nit = nit
         self.nombre = nombre
         self.telefono = telefono
@@ -30,7 +30,7 @@ class Empleado:
         self.correo = correo
 
 class Provedor:
-    def __init__(self, id_provedor, nombre, empresa, telefono, direccion, correo, id_categoria):
+    def __init__(self, id_provedor, nombre_provedor, empresa, telefono, direccion, correo, id_categoria):
         self.id_provedor = id_provedor
         self.nombre = nombre
         self.empresa = empresa
@@ -64,7 +64,7 @@ class Compra:
         self.id_empleado = id_empleado
         self.total = total
 
-class Detalle_compra
+class Detalle_compra:
     def __init__(self, id_detallecompra, id_compras, cantidad_compra, id_producto, precio_compra, sub_total, fecha_caducidad ):
         self.id_detallecompra = id_detallecompra
         self.id_compras = id_compras
@@ -74,3 +74,128 @@ class Detalle_compra
         self.sub_total = sub_total
         self.fecha_caducidad = fecha_caducidad
 
+categorias = {}
+productos = {}
+clientes =  {}
+empleados = {}
+provedor = {}
+ventas = {}
+detalle_ventas = {}
+compras = {}
+detalle_compras = {}
+
+usuario = {
+    "admin": "123",
+    "empleado": "abcd"
+}
+print("\n ---SISTEMA DE GESTIÓN--- ")
+print("1. Adminstrador")
+print("2. Empleado")
+rol = input("Selecciona tu rol en la empresa: ")
+
+if rol =="1":
+    usuario = "admin"
+elif rol =="2":
+    usuario = "empleado"
+else:
+    print("Rol inválido. Saliendo...")
+    exit()
+
+password = input(f" Ingrese contraseña para {usuario}: ")
+if usuario[usuario] !=password:
+    print("Contraseña incorrecta. Acceso denegado.")
+    exit()
+    print(f"Bienvenido, {usuario}")
+
+while True:
+    print("\n--- MENÚ PRINCIPAL---")
+    if rol == "admin":
+
+        print("1. Cantegorias")
+        print("2. Productos")
+        print("3. Clientes")
+        print("4. Empleados")
+        print("5. Proveedores")
+        print("6. Ventas")
+        print("7. Detalles de ventas")
+        print("8. Compras")
+        print("9. Detalle de compras")
+        print("10. Salir")
+    else:
+        print("1. Categorías")
+        print("2. Productos")
+        print("3. Clientes")
+        print("4. Ventas")
+        print("5. Compras")
+        print("6. Salir")
+
+    opcion = input("Elige una opción:")
+    if (usuario == "admin" and opcion == "10") or (usuario == "empleado" and opcion == "6"):
+        print("Saliendo del sistema...")
+        break
+
+    if opcion == "1":
+        print("\n---CATEGORIAS---")
+        print("1. Agregar categorías")
+        print("2. Lista de categorias")
+        sub = input("Opción: ")
+        if sub == "1":
+            idc = input("ID Categoria: ")
+            nombre = input("Nombre: ")
+            categorias[idc] = Categoria(idc, nombre )
+            print("Categoría agregada.")
+        elif sub == "2":
+            for c in categorias.values():
+                print(f"[{c.id_categoria}]")
+
+    elif opcion == "2":
+        print("\n--- PRODUCTOS---")
+        print("1. Agregar producto")
+        print("2. Listas de productos")
+        sub = input("Opcion: ")
+        if sub == "1":
+            idp = input("ID Producto: ")
+            nombre = input("Nombre: ")
+            precio = float(input("Precio: "))
+            idc = input("ID Categoría: ")
+            if idc not in categorias:
+                print("Error: la categoria no existe dentro del sistema.")
+            else:
+                stock = int(input("Stock: "))
+                productos[idp] = Producto(idp, nombre, precio, idc, stock)
+                print("Producto agregada.")
+        elif sub == "2":
+            for p in productos.values():
+                cant = categorias[p.id_categoria]
+                print(f"[{p.id_producto}] {p.nombre} | Precio: {p.precio} | Cantidad: {cant.nombre}| Stock: {p.stock}")
+
+    elif opcion == "3":
+        print("\n ---CLIENTES---")
+        print("1. Agregar cliente")
+        print("2. Lista de clientes")
+        sub = input("Opcion: ")
+        if sub == "1":
+            idc = input("Nit: ")
+            nombre = input("Nombre: ")
+            clientes[idc] = Cliente(idc, nombre)
+            print("Cliente agregado.")
+        elif sub == "2":
+            for e in empleados.values():
+                print(f"[{c.id_cliente}] {c.nombre}")
+
+    elif opcion == "4":
+        print("\n ---EMPLEADOS---")
+        print("1. Agregar empleado")
+        print("2. Listas de empleados")
+        sub = input("Opcion: ")
+        if sub == "1":
+            ide = input("ID Empleado: ")
+            nombre = input("Nombre: ")
+            empleados[ide] = Empleado(ide, nombre)
+            print("Nuevo empleado agregado.")
+        elif sub == "2":
+            for e in empleados.values():
+                print(f"[{e.id_empleado}] {e.nombre}")
+
+    elif opcion == "5":
+        print("\n")
