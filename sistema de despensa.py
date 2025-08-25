@@ -74,7 +74,6 @@ class Detalle_compra:
         self.sub_total = sub_total
         self.fecha_caducidad = fecha_caducidad
 
-categorias = {}
 productos = {}
 clientes =  {}
 empleados = {}
@@ -84,6 +83,16 @@ detalle_ventas = {}
 compras = {}
 detalle_compras = {}
 
+class GestionCategorias:
+    def __init__(self):
+        categorias = {}
+
+    def agregar(self, id_categoria, nombre):
+        self.categorias[id_categoria] = Categoria(id_categoria,nombre)
+
+    def listar(self):
+        for c in self.categorias.values():
+            print(f"[{c.id_categoria}] {c.nombre}")
 usuario = {
     "admin": "123",
     "empleado": "abcd"
