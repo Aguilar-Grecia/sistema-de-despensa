@@ -198,4 +198,4 @@ while True:
                 print(f"[{e.id_empleado}] {e.nombre}")
 
     elif opcion == "5":
-        print("\n")
+        print("\n --- PROVEEDORES ---")
