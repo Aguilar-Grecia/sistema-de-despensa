@@ -21,6 +21,10 @@ class Cliente:
         self.direccion = direccion
         self.correo = correo
 
+    def mostrar_info(self):
+        print(f"NIT: {self.nit} | Nombre: {self.nombre} | Teléfono: {self.telefono} | Dirección:{self.direccion} | Correo: {self.correo}")
+
+
 class Empleado:
     def __init__(self, id_empleado, nombre, telefono, direccion, correo):
         self.id_empleado = id_empleado
@@ -29,6 +33,8 @@ class Empleado:
         self.direccion = direccion
         self.correo = correo
 
+    def mostrar_info(self):
+        return f"ID: {self.id_empleado}, Nombre: {self.nombre}, Teléfono: {self.telefono}, Dirección:{self.direccion}, Correo: {self.correo}"
 class Provedor:
     def __init__(self, id_provedor, nombre_provedor, empresa, telefono, direccion, correo, id_categoria):
         self.id_provedor = id_provedor
@@ -74,7 +80,7 @@ class Detalle_compra:
         self.sub_total = sub_total
         self.fecha_caducidad = fecha_caducidad
 
-productos = {}
+
 clientes =  {}
 empleados = {}
 provedor = {}
@@ -85,7 +91,7 @@ detalle_compras = {}
 
 class GestionCategorias:
     def __init__(self):
-        categorias = {}
+        self.categorias = {}
 
     def agregar(self, id_categoria, nombre):
         self.categorias[id_categoria] = Categoria(id_categoria,nombre)
@@ -93,6 +99,44 @@ class GestionCategorias:
     def listar(self):
         for c in self.categorias.values():
             print(f"[{c.id_categoria}] {c.nombre}")
+
+class GestionProductos:
+    def __init__(self):
+        self.productos = {}
+
+    def agregar(self, id_producto, nombre, id_categoria, precio, stock):
+        self.productos[id_producto] = Producto(id_producto, nombre, id_categoria, precio, 0,0, stock)
+
+    def listar(self):
+        for p in self.productos.values():
+            print(p.mostrar_info())
+
+class GestinClientes:
+    def __init__(self):
+        self.clientes = {}
+
+    def agregar_cliente(self, cliente):
+        if cliente.nit in self.clientes:
+            print("El cliente con este NIT ya existe.")
+        else:
+            self.clientes[cliente.nit] = cliente
+            print("El cliente ha sido agregado correctamente.")
+
+    def listar_clientes(self):
+        if not self.clientes:
+            print("No hay clientes registrados.")
+        else:
+            print("\n Lista de clientes:")
+            for clientes in self.clientes.values():
+                print(clientes.mostrar_info())
+
+    def buscar_cliente(self, nit):
+        if nit in self.clientes:
+            return self.clientes[nit]
+        else:
+            print("No hay cliente registrado.")
+            return None
+
 usuario = {
     "admin": "123",
     "empleado": "abcd"
@@ -142,7 +186,7 @@ while True:
     if (usuario == "admin" and opcion == "10") or (usuario == "empleado" and opcion == "6"):
         print("Saliendo del sistema...")
         break
-
+def muenu_principal():
     if opcion == "1":
         print("\n---CATEGORIAS---")
         print("1. Agregar categorías")
