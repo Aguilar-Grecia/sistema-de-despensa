@@ -6,17 +6,17 @@ class Categoria:
     def mostrar_info(self):
         print(f"ID de la categoria: {self.id_categoria} | Nombre: {self.nombre}")
 class Producto:
-    def __init__(self, id_producto, nombre, precio, categoria, total_compras=0, total_ventas=0, stock=0):
+    def __init__(self, id_producto, nombre, precio_venta, categoria, total_compras=0, total_ventas=0, stock=0):
         self.id_producto = id_producto
         self.nombre = nombre
-        self.precio = precio
+        self.precio = precio_venta
         self.categoria = categoria
         self.total_compras = total_compras
         self.total_ventas = total_ventas
         self.stock = stock
 
     def mostrar_info(self):
-        print(f"ID del producto: {self.id_producto} | Nombre del producto: {self.nombre} | Precio: {self.precio} | Categoría: {self.categoria} | Total de compra: {self.total_compras} | Total de Ventas: {self.total_ventas} | Stock: {self.stock}")
+        print(f"ID del producto: {self.id_producto} | Nombre del producto: {self.nombre} | Precio: {self.precio_venta} | Categoría: {self.categoria} | Total de compra: {self.total_compras} | Total de Ventas: {self.total_ventas} | Stock: {self.stock}")
 class Cliente:
     def __init__(self, nit,  nombre_cliente, telefono, direccion, correo):
         self.nit = nit
@@ -64,16 +64,16 @@ class Venta:
         return(f"ID Venta: {self.id_venta} | Fecha: {self.fecha} | NIT: {self.nit} | ID del empleado: {self.id_empleado} | Total: {self.total}")
 
 class Detalle_venta:
-    def __init__(self, id_detalleventa, id_venta, cantidad, id_producto, precio, subtotal):
+    def __init__(self, id_detalleventa, id_venta, cantidad, id_producto, precio_venta, subtotal):
         self.id_venta = id_venta
         self.cantidad = cantidad
         self.id_producto = id_producto
-        self.precio = precio
+        self.precio = precio_venta
         self.subtotal = subtotal
         self.id_detalleventa = id_detalleventa
 
     def  mostrar_info(self):
-        return (f"ID Detalle de la venta: {self.id_detalleventa} |  ID de la venta: {self.id_venta} | Cantidad: {self.cantidad} | ID del producto: {self.id_producto} | Precio: {self.precio} | Subtotal: {self.subtotal}")
+        return (f"ID Detalle de la venta: {self.id_detalleventa} |  ID de la venta: {self.id_venta} | Cantidad: {self.cantidad} | ID del producto: {self.id_producto} | Precio: {self.precio_venta} | Subtotal: {self.subtotal}")
 
 class Compra:
     def __init__(self, id_compras, fecha_compra, id_provedor, id_empleado, total):
@@ -225,16 +225,32 @@ class GestionVenta:
             return None
 
 class GestionDetalleVenta:
-    def __init__(self):
+    def __init__(self, productos):
         self.detalles_venta = {}
+        self.productos = productos
 
-    def buscar_detalle(self, id_detalleventa):
+    def buscar_detalle(self, id_detalleventa, id_venta, cantidad, id_producto):
+        if id_detalleventa not in self.productos:
+            print(f"El producto con ID {id_producto} no existe.")
+            return
+
+        producto = self.productos[id_producto]
+        precio = producto.precio
+        subtotal = precio * cantidad
+
         if id_detalleventa in self.detalles_venta:
-            return self.detalles_venta[id_detalleventa]
+            print(f"El detalle de venta con ID {id_detalleventa} ya existe.")
         else:
-            print("No hay registro de ventas realizadas.")
-            return None
+            detalle = Detalle_venta(id_detalleventa, id_venta, cantidad, id_producto, precio, subtotal)
+            self.detalles_venta[id_detalleventa] = detalle
+            print(f"Detalle de venta agregado: {detalle.mostrar_info()}")
 
+    def listar_detalles(self):
+        if not self.detalles_venta:
+            print("No hay detalles de venta registrados.")
+        else:
+            for detalle in self.detalles_venta.values():
+                print(detalle.mostrar_info())
 class GestionCompras:
     def __init__(self):
         self.compras = {}
