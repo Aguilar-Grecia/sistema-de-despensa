@@ -232,3 +232,29 @@ while True:
         print("Producto agregado.")
     elif opcion == "7":
         nombre = input("Nombre del producto: ")
+        break
+    else:
+        print("Opcion no valida")
+
+def menu_empleado():
+    while True:
+        print("\n--- MENU DE EMPLEADO---")
+        print("1. Pagar compras a proveedores")
+        print("2. Listar productos")
+        print("3. Listar proveedores")
+        print("4. Volver")
+        opcion = input("Seleccione una opcion:")
+
+        if opcion == "1":
+            print("Simulacion de pago a proveedores realizada.")
+        elif opcion == "2":
+            for p in gestion.productos:
+                print(f"{p.id_producto} - {p.nombre} - Stock: {p.stock}")
+        elif opcion == "3":
+            for p in gestion.proveedores:
+                print(f"{p.id_proveedor} - {p.nombre} - Empresa: {p.empresa}")
+        elif opcion == "4":
+            break
+        else:
+            print("Opcion no valida")
+
