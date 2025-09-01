@@ -258,3 +258,41 @@ def menu_empleado():
         else:
             print("Opcion no valida")
 
+menu_cajero_venta(carrito):
+    contraseña = input("Ingrese contraseña del cajero: ")
+    if contraseña != "dinero":
+        print("Contraseña incorrecta.")
+        return
+    total = carrito.mostrar_carrito()
+    confirm = input(f"El total a pagar es Q{total}. Confirmar venta? (s/n): ").lower()
+    if confirm == "s":
+        for item in carrito.items:
+            item["producto"].stock -= item["cantidad"]
+        gestion.guardar_productos()
+        print("Venta realizada exitosamente.")
+    else:
+        print("Venta cancelada.")
+
+def menu_principal():
+    while True:
+        print("\n=== SISTEMA DE DESPENSA ===")
+        print("1. Administrador")
+        print("2. Empleado")
+        print("3. Cajero")
+        print("4. Salir")
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            menu_administrador()
+        elif opcion == "2":
+            menu_empleado()
+        elif opcion == "3":
+            menu_cajero()
+        elif opcion == "4":
+            print("Saliendo del sistema...")
+            break
+        else:
+            print("Opción inválida.")
+
+menu_principal()
+
