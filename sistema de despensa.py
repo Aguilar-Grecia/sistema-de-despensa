@@ -36,6 +36,20 @@ class Producto:
     def mostrar_info(self):
         return f"ID del producto: {self.id_producto} | Producto: {self.nombre} | Precio: {self.precio_venta} | Stock: {self.stock} | Caducidad: {self.fecha_caducidad}"
 
+class Sistema:
+    def __init__(self):
+        self.categorias = GestionCategoria()
+        self.productos = GestionProducto()
+        self.clientes = GestionClientes()
+
+class Gestion:
+    def __init__(self):
+        self.ventas = []
+        self.detalle_venta = []
+
+    def guardar_datos(self):
+        pass
+
 class Persona:
     def __init__(self, nombre, telefono, direccion, correo):
         self.nombre = nombre
@@ -87,6 +101,29 @@ class Cajero(Empleado):
                 print(f"{producto.nombre}: {cantidad} x {producto.precio} = {subtotal}")
                 print(f"Total a pagar: {total}")
                 return total
+class Carrito:
+    def __init__(self):
+        self.items = []
+
+    def agregar_producto(self, producto, cantidad):
+        self.items.append({"producto": producto, "cantidad": cantidad})
+        print(f"Se agregaron {cantidad} unidades de {producto.nombre} al carrito.")
+
+    def mostrar_carrito(self):
+        if not self.items:
+            print("El carrito está vacío.")
+            return 0
+        total = 0
+        print("===== Carrito =====")
+        for i, item in enumerate(self.items, 1):
+            subtotal = item["producto"].precio * item["cantidad"]
+            total += subtotal
+            print(f"{i}. {item['producto'].nombre} x {item['cantidad']} = Q{subtotal}")
+        print(f"Total a pagar: Q{total}")
+        return total
+
+    def vaciar_carrito(self):
+        self.items = []
 
 class Administrador(Persona):
     def registrar_producto(self, gestion_productos, nombre, precio, categoria, stock=0, fecha_caducidad=None):
@@ -434,9 +471,23 @@ def menu_cajero_venta(gestion, carrito):
 
 def menu_cajero(gestion, carrito):
     while True:
+        print("\n---MENU DEL CAJERO---")
+        print("1. Ver carrito")
+        print("2. Realizar venta")
+        print("3. Volver")
 
+        opcion = input("Seleccione una opcion: ")
 
-def menu_principal():
+        if opcion == "1":
+            carrito.mostrar_carrito()
+        elif opcion == "2":
+            menu_cajero_venta(gestion, carrito)
+        elif opcion == "3":
+            break
+        else:
+            print("Opción inválida.")
+
+def menu_principal(sistema, geston, carrito):
     while True:
         print("\n=== SISTEMA DE DESPENSA ===")
         print("1. Administrador")
@@ -446,13 +497,20 @@ def menu_principal():
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
-            menu_administrador()
+            menu_administrador(sistema)
         elif opcion == "2":
-            menu_empleado()
+            menu_empleado(sistema)
         elif opcion == "3":
-            menu_cajero()
+            menu_cajero(sistema)
         elif opcion == "4":
             print("Saliendo...")
             break
         else:
             print("Opción inválida.")
+
+if __name__== "_main_":
+    sistema = Sistema()
+    gestion = Gestion()
+    carrito = Carrito()
+
+    menu_principal(sistema, gestion, carrito)
