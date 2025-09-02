@@ -7,7 +7,8 @@ class Categoria:
         print(f"ID de la categoria: {self.id_categoria} | Categoria: {self.nombre}")
 
 class Producto:
-    _codigo_auto = 1
+    _id_auto = 1
+
     def __init__(self, nombre, precio_venta, categoria, stock=0, fecha_caducidad=None):
         self.id_producto = Producto._codigo_auto
         Producto._codigo_auto += 1
@@ -18,6 +19,7 @@ class Producto:
         self.total_compras = 0
         self.total_ventas = 0
         self.stock = stock
+        self.fecha_caducidad= fecha_caducidad
 
     def registrar_compra(self, cantidad):
         self.total_compras += cantidad
@@ -28,7 +30,7 @@ class Producto:
             print(f"No hay suficiente stock de {self.nombre}. Disponible: {self.stock}")
             return False
         self.total_ventas += cantidad
-        self.stock = self.total_compras - self.total_ventas
+        self.stock -= cantidad
         return True
 
     def mostrar_info(self):
@@ -53,6 +55,7 @@ class Empleado(Persona):
     def __init__(self, id_empleado, nombre, telefono, direccion, correo):
         super().__init__(nombre, telefono, direccion, correo)
         self.id_empleado = id_empleado
+        self.empleados = []
 
     def cargar_empleados(self):
         try:
@@ -90,6 +93,12 @@ class Administrador(Persona):
         gestion_productos.agregar(nombre, precio, categoria, stock, fecha_caducidad)
 
 class Proveedor(Persona):
+    def __init__(self, id_proveedor, nombre, telefono, direccion, correo, empresa):
+        super().__init__(nombre, telefono, direccion, correo)
+        self.id_proveedor = id_proveedor
+        self.empresa = empresa
+        self.proveedors = []
+
     def cargar_proveedores(self):
         try:
             with open("proveedores.txt", "r", encoding="utf-8") as archivo:
@@ -109,20 +118,28 @@ class Proveedor(Persona):
         self.proveedores.append(Proveedor(id_proveedor, nombre, empresa))
         self.guardar_proveedores()
 
-
-class GestionCategorias:
+class GestionCategoria:
     def __init__(self):
-        self,categorias = {}
+        self.categorias = {}
 
     def agregar(self, id_categoria, nombre):
         self.categorias[id_categoria] = Categoria(id_categoria, nombre)
 
     def listar(self):
         if not self.categorias:
-            print("No hay categorias")
+            print("No hay categorías. ")
         else:
-            for c in self.categorias. values():
-                print(c.mostrar_info())
+            for c in self.categorias.values():
+                c.mostrar_info()
+
+
+
+
+
+
+
+
+
 
 class GestionProducto:
     def __init__(self):
@@ -191,74 +208,221 @@ gestion_categorias = GestionCategorias()
 gestion_producto = GestionProducto()
 gestion_clientes = GestionClientes()
 
-while True:
-    print("\n---MENU ADMINISTRADOR---")
-    print("1. Agregar proveedor")
-    print("2. Agregar empleado")
-    print("3. Listar proveedores")
-    print("4. Listar empleados")
-    print("5. Listar productos")
-    print("6. Agregar productos")
-    print("7. Volver")
-    opcion= input("Seleccione una opcion:")
+gestion_categorias.agregar(1, "General")
+gestion_producto.cargar_productos(gestion_categorias.categorias)
+gestion = Gestion()
+class Venta:
+    _codigo_auto = 1
 
-    if opcion == "1":
-        nombre = input("Nombre del proveedor: ")
-        empresa = input("Empresa: ")
-        gestion.agregar_proveedor(nombre, empresa)
-        print("Proveedor agregado.")
-    elif opcion == "2":
-        nombre = input("Nombre: ")
-        telefeno = input("Telefono: ")
-        direccion = input("Direccion: ")
-        correo = input("Correo: ")
-        gestion.agregar_empleado(nombre, telefeno, direccion, correo)
-        print("Empleado agregado.")
-    elif opcion == "3":
-        for p in gestion.proveedores:
-            print(f"{p.id_proveedor} - {p.nombre} -  Empresa: {p.empresa}")
-    elif opcion == "4":
-        for e in gestion.empleados:
-            print(f"{e.id_empleado} - {e.nombre} -  {e.telefono}")
-    elif opcion == "5":
-        for p in gestion.productos:
-            print(f"{p.id_producto} - {p.nombre} - Stock:{p.stock} - Precio: Q{p.precio}")
-    elif opcion == "6":
-        nombre = input("Nombre del producto: ")
-        precio =float(input("Precio: "))
-        stock = int(input("Stock: "))
-        categoria = input("Categoria: ")
-        gestion.agregar_producto(nombre, precio, stock, categoria, stock)
-        print("Producto agregado.")
-    elif opcion == "7":
-        nombre = input("Nombre del producto: ")
-        break
-    else:
-        print("Opcion no valida")
+    def __init__(self, id_venta, fecha, NIT, id_empleado, total):
+        self.id_venta = id_venta
+        self.fecha = fecha
+        self.NIT = NIT
+        self.id_empleado = id_empleado
+        self.total = 0.0
+
+    def mostrar_info(self):
+        return f"ID Venta: {self.id_venta} | Fecha: {self.fecha} | NIT: {self.NIT} | ID del empleado: {self.id_empleado} | Total: {self.total}"
+
+class DetalleVenta:
+    def __init__(self, subtotal, precio, nombre_producto, id_detalleventa, id_venta, cantidad, id_producto, precio_venta):
+        self.id_venta = id_venta
+        self.cantidad = cantidad
+        self.id_producto = id_producto
+        self.precio = precio_venta
+        self.subtotal = subtotal
+        self.id_detalleventa = id_detalleventa
+        self.nombre_producto = nombre_producto
+
+    def  mostrar_info(self):
+        return f"ID Detalle de la venta: {self.id_detalleventa} |  ID de la venta: {self.id_venta} | Cantidad: {self.cantidad} | ID del producto: {self.id_producto} | Precio: {self.precio_venta} | Subtotal: {self.subtotal}"
+
+class Compra:
+    def __init__(self, id_compras, fecha_compra, id_provedor, id_empleado, total):
+        self.id_compras = id_compras
+        self.fecha_compra = fecha_compra
+        self.id_provedor = id_provedor
+        self.id_empleado = id_empleado
+        self.detalles = []
+        self.total = 0.0
+
+    def mostrar_info(self):
+        return f"ID de compras: {self.id_compras} | Fecha de compra: {self.fecha_compra} | ID del proveedor: {self.id_provedor} | ID del empleado:{self.id_empleado} | Total gastado: {self.total}"
+
+class Detalle_compra:
+    def __init__(self, nombre_producto, id_detallecompra, id_compras, cantidad_compra, id_producto, precio_compra, sub_total, fecha_caducidad ):
+        self.id_detallecompra = id_detallecompra
+        self.id_compras = id_compras
+        self.cantidad_compra = cantidad_compra
+        self.id_producto = id_producto
+        self.precio_compra = precio_compra
+        self.sub_total = sub_total
+        self.fecha_caducidad = fecha_caducidad
+        self.nombre_producto = nombre_producto
+
+    def mostrar_info(self):
+        return f"ID del detalle de compra: {self.id_detallecompra} | ID de compras: {self.id_compras} | Cantidad de compra: {self.cantidad_compra} | ID del producto: {self.id_producto} Fecha de caducidad: {self.fecha_caducidad} | Precio de compra: {self.precio_compra} | Sub total: {self.sub_total}"
+
+def menu_administrador():
+    while True:
+        print("\n=== MENÚ ADMINISTRADOR ===")
+        print("1. Agregar categoría")
+        print("2. Agregar producto")
+        print("3. Agregar proveedor")
+        print("4. Agregar empleado")
+        print("5. Listar todo")
+        print("6. Volver")
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            nombre = input("Nombre de la categoría: ")
+            id_categoria = len(gestion.categorias) + 1
+            gestion.categorias.append(Categoria(id_categoria, nombre))
+            gestion.guardar_datos()
+            print("Categoría agregada.")
+        elif opcion == "2":
+            nombre = input("Nombre del producto: ")
+            precio = float(input("Precio: "))
+            stock = int(input("Stock inicial: "))
+            for cat in gestion.categorias:
+                print(f"{cat.id_categoria} - {cat.nombre}")
+            id_categoria = int(input("ID de la categoría: "))
+            categoria = next((c for c in gestion.categorias if c.id_categoria == id_categoria), None)
+            if categoria:
+                id_producto = len(gestion.productos) + 1
+                gestion.productos.append(Producto(id_producto, nombre, precio, categoria, stock))
+                gestion.guardar_datos()
+                print("Producto agregado.")
+            else:
+                print("Categoría no encontrada.")
+        elif opcion == "3":
+            nombre = input("Nombre del proveedor: ")
+            empresa = input("Empresa: ")
+            telefono = input("Teléfono: ")
+            direccion = input("Dirección: ")
+            correo = input("Correo: ")
+            for cat in gestion.categorias:
+                print(f"{cat.id_categoria} - {cat.nombre}")
+            id_categoria = int(input("ID de la categoría principal del proveedor: "))
+            id_proveedor = len(gestion.proveedores) + 1
+            gestion.proveedores.append(Proveedor(id_proveedor, nombre, empresa, telefono, direccion, correo, id_categoria))
+            gestion.guardar_datos()
+            print("Proveedor agregado.")
+        elif opcion == "4":
+            nombre = input("Nombre del empleado: ")
+            telefono = input("Teléfono: ")
+            direccion = input("Dirección: ")
+            correo = input("Correo: ")
+            id_empleado = len(gestion.empleados) + 1
+            gestion.empleados.append(Empleado(id_empleado, nombre, telefono, direccion, correo))
+            gestion.guardar_datos()
+            print("Empleado agregado.")
+        elif opcion == "5":
+            print("\n=== CATEGORÍAS ===")
+            for c in gestion.categorias:
+                print(f"{c.id_categoria} - {c.nombre}")
+            print("\n=== PRODUCTOS ===")
+            for p in gestion.productos:
+                print(f"{p.id_producto} - {p.nombre} - Precio: Q{p.precio} - Stock: {p.stock} - Categoría: {p.categoria.nombre}")
+            print("\n=== PROVEEDORES ===")
+            for pr in gestion.proveedores:
+                print(f"{pr.id_proveedor} - {pr.nombre} - Empresa: {pr.empresa}")
+            print("\n=== EMPLEADOS ===")
+            for e in gestion.empleados:
+                print(f"{e.id_empleado} - {e.nombre}")
+        elif opcion == "6":
+            break
+        else:
+            print("Opción inválida.")
 
 def menu_empleado():
     while True:
-        print("\n--- MENU DE EMPLEADO---")
+        print("\n=== MENÚ EMPLEADO ===")
         print("1. Pagar compras a proveedores")
         print("2. Listar productos")
         print("3. Listar proveedores")
         print("4. Volver")
-        opcion = input("Seleccione una opcion:")
+        opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
-            print("Simulacion de pago a proveedores realizada.")
+            print("Esta opción procesaría pagos a proveedores (simulación).")
         elif opcion == "2":
             for p in gestion.productos:
                 print(f"{p.id_producto} - {p.nombre} - Stock: {p.stock}")
         elif opcion == "3":
-            for p in gestion.proveedores:
-                print(f"{p.id_proveedor} - {p.nombre} - Empresa: {p.empresa}")
+            for pr in gestion.proveedores:
+                print(f"{pr.id_proveedor} - {pr.nombre} - Empresa: {pr.empresa}")
         elif opcion == "4":
             break
         else:
-            print("Opcion no valida")
+            print("Opción inválida.")
 
-menu_cajero_venta(carrito):
+def menu_cajero():
+    while True:
+        print("\n=== MENÚ CAJERO ===")
+        print("1. Agregar cliente")
+        print("2. Vender productos")
+        print("3. Listar productos")
+        print("4. Listar clientes")
+        print("5. Volver")
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            nit = input("NIT del cliente: ")
+            nombre = input("Nombre: ")
+            telefono = input("Teléfono: ")
+            direccion = input("Dirección: ")
+            correo = input("Correo: ")
+            gestion.clientes.append(Cliente(nit, nombre, telefono, direccion, correo))
+            gestion.guardar_datos()
+            print("Cliente agregado.")
+        elif opcion == "2":
+            menu_cliente()
+        elif opcion == "3":
+            for p in gestion.productos:
+                print(f"{p.id_producto} - {p.nombre} - Precio: Q{p.precio} - Stock: {p.stock}")
+        elif opcion == "4":
+            for c in gestion.clientes:
+                print(f"{c.nit} - {c.nombre}")
+        elif opcion == "5":
+            break
+        else:
+            print("Opción inválida.")
+
+def menu_cliente():
+    carrito = Carrito()
+    while True:
+        print("\n=== MENÚ CLIENTE ===")
+        print("1. Ver productos y agregar al carrito")
+        print("2. Finalizar selección y pasar a caja")
+        print("3. Volver")
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            for prod in gestion.productos:
+                print(f"{prod.id_producto} - {prod.nombre} - Precio: Q{prod.precio} - Stock: {prod.stock}")
+            try:
+                prod_id = int(input("Ingrese el ID del producto a agregar: "))
+                producto = next((p for p in gestion.productos if p.id_producto == prod_id), None)
+                if producto:
+                    cantidad = int(input(f"Ingrese la cantidad de '{producto.nombre}': "))
+                    carrito.agregar_item(producto, cantidad)
+                else:
+                    print("Producto no encontrado.")
+            except ValueError:
+                print("Debe ingresar números válidos.")
+        elif opcion == "2":
+            total = carrito.mostrar_carrito()
+            if total > 0:
+                print("\nAhora un cajero procesará la venta...")
+                menu_cajero_venta(carrito)
+            break
+        elif opcion == "3":
+            break
+        else:
+            print("Opción inválida.")
+
+def menu_cajero_venta(carrito):
     contraseña = input("Ingrese contraseña del cajero: ")
     if contraseña != "dinero":
         print("Contraseña incorrecta.")
@@ -268,7 +432,11 @@ menu_cajero_venta(carrito):
     if confirm == "s":
         for item in carrito.items:
             item["producto"].stock -= item["cantidad"]
-        gestion.guardar_productos()
+            id_detalle = len(gestion.detalle_ventas) + 1
+            venta = Venta("Cliente", 1, total)
+            gestion.ventas.append(venta)
+            gestion.detalle_ventas.append(DetalleVenta(id_detalle, venta, item["producto"], item["cantidad"]))
+        gestion.guardar_datos()
         print("Venta realizada exitosamente.")
     else:
         print("Venta cancelada.")
@@ -289,10 +457,7 @@ def menu_principal():
         elif opcion == "3":
             menu_cajero()
         elif opcion == "4":
-            print("Saliendo del sistema...")
+            print("Saliendo...")
             break
         else:
             print("Opción inválida.")
-
-menu_principal()
-
