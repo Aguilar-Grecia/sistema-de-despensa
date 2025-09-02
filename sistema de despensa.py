@@ -132,52 +132,50 @@ class GestionCategoria:
             for c in self.categorias.values():
                 c.mostrar_info()
 
-
-
-
-
-
-
-
-
-
 class GestionProducto:
     def __init__(self):
-        self.id_producto = {}
+        self.productos = {}
 
-    def Agregar(self, nombre, precio, categoria, stock=0, fecha_caducidad=None):
+    def agregar(self,nombre,precio, categoria, stock=0, fecha_caducidad=None):
         producto = Producto(nombre, precio, categoria, stock, fecha_caducidad)
-        self.producto[producto.id_producto] = producto
-        print(f"Producto '{nombre}' agregado correctamente. ")
+        self.productos[producto.id_producto] = producto
+        print(f"Producto '{nombre}' agregado correctamente.")
 
     def listar(self):
         if not self.productos:
-            print("No hay productos.")
+            print("No hay productos. ")
         else:
             for p in self.productos.values():
                 print(p.mostrar_info())
 
 class GestionClientes:
-        def __init__(self):
-            self.clientes = {}
-            self.cargar_clientes()
+    def __init__(self):
+        self.clientes = {}
+        self.carga_clientes()
 
-        def cargar_clientes(self):
-            try:
-                with open('clientes.txt', 'r', encoding="utf-8") as archivo:
-                    for linea in archivo:
-                        linea = linea.strip()
-                        if linea:
-                            nit, nombre, direccion, telefono, correo = linea.split(':')
-                            self.cliente[nit] = {
-                                "Nombre": nombre,
-                                "Direccion": direccion,
-                                "Telefono": telefono,
-                                "Correo": correo
-                            }
-                print("Clientes importados desde clientes.txt")
-            except FileNotFoundError:
-                print("No existe el archivo clientes.txt, se creara uno nuevo al guardar. ")
+    def cargar_clientes(self):
+        try:
+            with open("clientes.txt", "r", encoding="utf-8") as archivo:
+                for linea in archivo:
+                    linea = linea.strip()
+                    if linea:
+                        nit, nombre, direccion, telefono, correo = linea.split(":")
+                        self.clientes[nit] = {
+                            "Nombre": nombre,
+                            "Direccion": direccion,
+                            "Telefono": telefono,
+                            "Correo": correo
+                        }
+            print("Clientes importados desde clientes.txt")
+        except FileNotFoundError:
+            print("No existe el archivo clientes.txt, se creará uno nuevo al guardar. ")
+
+
+
+
+
+
+
 
         def guardar_clientes(self):
             with open('clientes.txt', 'w', encoding="utf-8") as archivo:
