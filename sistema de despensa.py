@@ -170,96 +170,83 @@ class GestionClientes:
         except FileNotFoundError:
             print("No existe el archivo clientes.txt, se creará uno nuevo al guardar. ")
 
+    def guardar_clientes(self):
+        with open("clientes.txt", "w", encoding="utf-8") as archivo:
+            for nit, datos in self.clientes.items():
+                archivo.write(f"{nit}:{datos['Nombre']}:{datos['Direccion']}:{datos['Telefono']}:{datos['Correo']}")
 
+    def agregar_cliente(self, nit, nombre, direccion,telefono, correo):
+        self.clientes[nit] = {
+            "Nombre": nombre,
+            "Direccion": direccion,
+            "Telefono": telefono,
+            "Correo": correo
+        }
+        self.guardar_clientes()
+        print(f"Cliente con NIT {nit} agregado y guardado correctamente.")
 
+    def mostrar_todo(self):
+        if self.clientes:
+            print("\nLISTA DE CLIENTES")
+            for nit, datos in self.clientes.items():
+                print(f"NIT: {nit}")
+                for clave, valor in datos.items():
+                    print(f"\t{clave}: {valor}")
+        else:
+            print("No hay clientes registrados.")
 
-
-
-
-
-        def guardar_clientes(self):
-            with open('clientes.txt', 'w', encoding="utf-8") as archivo:
-                for nit, datos in self.clientes.items():
-                    archivo.write(f"{nit}: {datos['Nombre']}: {datos['Direccion']}:{datos["Telefono"]}:{datos['Correo']}")
-
-        def agregar_cliente(self, nit, nombre, direccion, telefono, correo):
-            self.clientes[nit] = {
-                "Nombre": nombre,
-                "Direccion": direccion,
-                "Telefono": telefono,
-                "Correo": correo
-            }
-            self.guargar_clientes()
-            print(f"Cliente con NIT {nit} agregado y guardado correctamente.")
-
-        def mostrar_todo(self):
-            if self.clientes:
-                print("\nLista de clientes:")
-                for nit, datos in self.clientes.items():
-                    print(f"\nNIT: {nit}")
-                    for clave,valor in datos.items():
-                        print(f"\t{clave}: {valor}")
-            else:
-                print("No hay clientes registrados.")
-
-gestion_categorias = GestionCategorias()
-gestion_producto = GestionProducto()
-gestion_clientes = GestionClientes()
-
-gestion_categorias.agregar(1, "General")
-gestion_producto.cargar_productos(gestion_categorias.categorias)
-gestion = Gestion()
 class Venta:
-    _codigo_auto = 1
+    _codigo_auto=1
 
-    def __init__(self, id_venta, fecha, NIT, id_empleado, total):
-        self.id_venta = id_venta
+    def __init__(self, fecha, NIT, id_empleado, total=0.0):
+        self.id_venta = Venta._codigo_auto
+        Venta._codigo_auto+=1
         self.fecha = fecha
         self.NIT = NIT
         self.id_empleado = id_empleado
-        self.total = 0.0
+        self.total = total
 
     def mostrar_info(self):
-        return f"ID Venta: {self.id_venta} | Fecha: {self.fecha} | NIT: {self.NIT} | ID del empleado: {self.id_empleado} | Total: {self.total}"
+        return f"ID Venta: {self.id_venta}| Fecha:{self.fecha} | NIT: {self.NIT} | ID del empleado: {self.id_empleado} | Total: {self.total}"
 
 class DetalleVenta:
-    def __init__(self, subtotal, precio, nombre_producto, id_detalleventa, id_venta, cantidad, id_producto, precio_venta):
+    def __init__(self, id_detalleventa, id_venta, nombre_producto, cantidad, id_producto, precio):
+        self.id_detalleventa = id_detalleventa
         self.id_venta = id_venta
         self.cantidad = cantidad
         self.id_producto = id_producto
-        self.precio = precio_venta
-        self.subtotal = subtotal
-        self.id_detalleventa = id_detalleventa
+        self.precio = precio
+        self.subtotal = precio * cantidad
         self.nombre_producto = nombre_producto
 
     def  mostrar_info(self):
-        return f"ID Detalle de la venta: {self.id_detalleventa} |  ID de la venta: {self.id_venta} | Cantidad: {self.cantidad} | ID del producto: {self.id_producto} | Precio: {self.precio_venta} | Subtotal: {self.subtotal}"
+        return f"ID Detalle de la venta: {self.id_detalleventa} |  ID de la venta: {self.id_venta} | Cantidad: {self.cantidad}  | Precio: {self.precio} | Subtotal: {self.subtotal}"
 
 class Compra:
-    def __init__(self, id_compras, fecha_compra, id_provedor, id_empleado, total):
+    def __init__(self, id_compras, fecha_compra, id_proveedor, id_empleado):
         self.id_compras = id_compras
         self.fecha_compra = fecha_compra
-        self.id_provedor = id_provedor
+        self.id_proveedor = id_proveedor
         self.id_empleado = id_empleado
         self.detalles = []
         self.total = 0.0
 
     def mostrar_info(self):
-        return f"ID de compras: {self.id_compras} | Fecha de compra: {self.fecha_compra} | ID del proveedor: {self.id_provedor} | ID del empleado:{self.id_empleado} | Total gastado: {self.total}"
+        return f"ID de compras: {self.id_compras} | Fecha de compra: {self.fecha_compra} | ID del proveedor: {self.id_proveedor} | ID del empleado:{self.id_empleado} | Total gastado: {self.total}"
 
 class Detalle_compra:
-    def __init__(self, nombre_producto, id_detallecompra, id_compras, cantidad_compra, id_producto, precio_compra, sub_total, fecha_caducidad ):
+    def __init__(self, nombre_producto, id_detallecompra, id_compras, cantidad, id_producto, precio_compra, sub_total, fecha_caducidad ):
         self.id_detallecompra = id_detallecompra
         self.id_compras = id_compras
-        self.cantidad_compra = cantidad_compra
+        self.cantidad = cantidad
         self.id_producto = id_producto
         self.precio_compra = precio_compra
-        self.sub_total = sub_total
+        self.sub_total = cantidad * precio_compra
         self.fecha_caducidad = fecha_caducidad
         self.nombre_producto = nombre_producto
 
     def mostrar_info(self):
-        return f"ID del detalle de compra: {self.id_detallecompra} | ID de compras: {self.id_compras} | Cantidad de compra: {self.cantidad_compra} | ID del producto: {self.id_producto} Fecha de caducidad: {self.fecha_caducidad} | Precio de compra: {self.precio_compra} | Sub total: {self.sub_total}"
+        return f"ID del detalle de compra: {self.id_detallecompra} | ID de compras: {self.id_compras} | Cantidad de compra: {self.cantidad} | ID del producto: {self.id_producto} Fecha de caducidad: {self.fecha_caducidad} | Precio de compra: {self.precio_compra} | Sub total: {self.sub_total}"
 
 def menu_administrador():
     while True:
