@@ -10,8 +10,8 @@ class Producto:
     _id_auto = 1
 
     def __init__(self, nombre, precio_venta, categoria, stock=0, fecha_caducidad=None):
-        self.id_producto = Producto._codigo_auto
-        Producto._codigo_auto += 1
+        self.id_producto = Producto._id_auto
+        Producto._id_auto += 1
         self.nombre = nombre
         self.precio_venta = precio_venta
         self.categoria = categoria
@@ -41,6 +41,7 @@ class Sistema:
         self.categorias = GestionCategoria()
         self.productos = GestionProducto()
         self.clientes = GestionClientes()
+        self.empleados = {}
 
 class Gestion:
     def __init__(self):
@@ -299,7 +300,7 @@ def menu_administrador(sistema):
         if opcion == "1":
             nombre = input("Nombre de la categoría: ")
             id_categoria = len(sistema.categorias.categorias) + 1
-            sistema.categorias.append(Categoria(id_categoria, nombre))
+            sistema.categorias.agregar(Categoria(id_categoria, nombre))
             print("Categoría agregada.")
         elif opcion == "2":
             nombre = input("Nombre del producto: ")
@@ -307,7 +308,7 @@ def menu_administrador(sistema):
             stock = int(input("Stock inicial: "))
             sistema.categorias.listar()
             id_categoria = int(input("ID de la categoría: "))
-            if id_categoria in sistema.categorias.categorais:
+            if id_categoria in sistema.categorias.categorias:
                 sistema.productos.agregar(nombre, precio, sistema.categorias.categorias[id_categoria], stock)
                 print("Producto agregado.")
             else:
@@ -337,7 +338,7 @@ def menu_administrador(sistema):
             for pr in sistema.proveedores.proveedores:
                 print(f"{pr.id_proveedor} - {pr.nombre} - Empresa: {pr.empresa}")
             print("\n=== EMPLEADOS ===")
-            for e in sistema.empleados.valuaes():
+            for e in sistema.empleados.values():
                 print(f"{e.id_empleado} - {e.nombre}")
         elif opcion == "6":
             break
@@ -487,7 +488,7 @@ def menu_cajero(gestion, carrito):
         else:
             print("Opción inválida.")
 
-def menu_principal(sistema, geston, carrito):
+def menu_principal(sistema, carrito):
     while True:
         print("\n=== SISTEMA DE DESPENSA ===")
         print("1. Administrador")
@@ -508,9 +509,7 @@ def menu_principal(sistema, geston, carrito):
         else:
             print("Opción inválida.")
 
-if __name__== "_main_":
-    sistema = Sistema()
+if __name__== "__main__":
     gestion = Gestion()
     carrito = Carrito()
-
-    menu_principal(sistema, gestion, carrito)
+    menu_principal( gestion, carrito)
