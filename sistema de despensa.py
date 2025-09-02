@@ -351,18 +351,16 @@ def menu_cajero(sistema):
         elif opcion == "2":
             menu_cliente(sistema)
         elif opcion == "3":
-            for p in gestion.productos:
-                print(f"{p.id_producto} - {p.nombre} - Precio: Q{p.precio} - Stock: {p.stock}")
+            sistema.productos.listar()
         elif opcion == "4":
-            for c in gestion.clientes:
-                print(f"{c.nit} - {c.nombre}")
+            sistema.clientes.mostrar_todo()
         elif opcion == "5":
             break
         else:
             print("Opción inválida.")
 
-def menu_cliente():
-    carrito = Carrito()
+def menu_cliente(sistema):
+    carrito = []
     while True:
         print("\n=== MENÚ CLIENTE ===")
         print("1. Ver productos y agregar al carrito")
@@ -371,47 +369,72 @@ def menu_cliente():
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
-            for prod in gestion.productos:
-                print(f"{prod.id_producto} - {prod.nombre} - Precio: Q{prod.precio} - Stock: {prod.stock}")
+            sistema.productos.listar()
             try:
                 prod_id = int(input("Ingrese el ID del producto a agregar: "))
-                producto = next((p for p in gestion.productos if p.id_producto == prod_id), None)
-                if producto:
+                if prod_id in sistema.productos.productos:
+                    producto = sistema.productos.productos[prod_id]
                     cantidad = int(input(f"Ingrese la cantidad de '{producto.nombre}': "))
-                    carrito.agregar_item(producto, cantidad)
+                    carrito.append((producto, cantidad))
                 else:
                     print("Producto no encontrado.")
             except ValueError:
                 print("Debe ingresar números válidos.")
         elif opcion == "2":
-            total = carrito.mostrar_carrito()
-            if total > 0:
-                print("\nAhora un cajero procesará la venta...")
-                menu_cajero_venta(carrito)
+            if carrito:
+                total = sum(p.precio * c for p, c in carrito)
+                print("\n---RESUMEN DE CARRITO---")
+                for p, c in carrito:
+                    print(f"{p.nombre} x {c} = Q{p.precio * c}")
+                print(f"TOTAL: {total}")
+                confirmar = input("¿Confirmar compra? (s/n): ").lower()
+                if confirmar == "s":
+                    for p, c in carrito:
+                        sistema.registrar_venta(p.id_producto, c, "C/F")
+                    print("Venta realizada. ")
+                else:
+                    print("Venta cancelada.")
+            else:
+                print("Carrito vacío.")
             break
         elif opcion == "3":
             break
         else:
             print("Opción inválida.")
 
-def menu_cajero_venta(carrito):
+def menu_cajero_venta(gestion, carrito):
     contraseña = input("Ingrese contraseña del cajero: ")
     if contraseña != "dinero":
         print("Contraseña incorrecta.")
         return
+
     total = carrito.mostrar_carrito()
-    confirm = input(f"El total a pagar es Q{total}. Confirmar venta? (s/n): ").lower()
+    if total == 0:
+        print("El carrito esta vacio. No se puede procesar la venta. ")
+        return
+
+    confirm = input(f"El toal a pagar es Q{total}. Confirmar venta?")
     if confirm == "s":
+
+        id_venta = len(gestion.ventas) + 1
+        venta = Venta("Cliente", id_venta, total)
+        gestion.ventas.append(venta)
+
         for item in carrito.items:
             item["producto"].stock -= item["cantidad"]
             id_detalle = len(gestion.detalle_ventas) + 1
-            venta = Venta("Cliente", 1, total)
-            gestion.ventas.append(venta)
-            gestion.detalle_ventas.append(DetalleVenta(id_detalle, venta, item["producto"], item["cantidad"]))
+            detalle = DetalleVenta(id_detalle, venta, item["producto"], item["cantidad"])
+            gestion.detalle_ventas.append(detalle)
+
         gestion.guardar_datos()
-        print("Venta realizada exitosamente.")
+        carrito.vaciar_carrito()
+        print("Venta realizada exitosamente. ")
     else:
         print("Venta cancelada.")
+
+def menu_cajero(gestion, carrito):
+    while True:
+
 
 def menu_principal():
     while True:
