@@ -248,7 +248,7 @@ class Detalle_compra:
     def mostrar_info(self):
         return f"ID del detalle de compra: {self.id_detallecompra} | ID de compras: {self.id_compras} | Cantidad de compra: {self.cantidad} | ID del producto: {self.id_producto} Fecha de caducidad: {self.fecha_caducidad} | Precio de compra: {self.precio_compra} | Sub total: {self.sub_total}"
 
-def menu_administrador():
+def menu_administrador(sistema):
     while True:
         print("\n=== MENÚ ADMINISTRADOR ===")
         print("1. Agregar categoría")
@@ -261,22 +261,17 @@ def menu_administrador():
 
         if opcion == "1":
             nombre = input("Nombre de la categoría: ")
-            id_categoria = len(gestion.categorias) + 1
-            gestion.categorias.append(Categoria(id_categoria, nombre))
-            gestion.guardar_datos()
+            id_categoria = len(sistema.categorias.categorias) + 1
+            sistema.categorias.append(Categoria(id_categoria, nombre))
             print("Categoría agregada.")
         elif opcion == "2":
             nombre = input("Nombre del producto: ")
             precio = float(input("Precio: "))
             stock = int(input("Stock inicial: "))
-            for cat in gestion.categorias:
-                print(f"{cat.id_categoria} - {cat.nombre}")
+            sistema.categorias.listar()
             id_categoria = int(input("ID de la categoría: "))
-            categoria = next((c for c in gestion.categorias if c.id_categoria == id_categoria), None)
-            if categoria:
-                id_producto = len(gestion.productos) + 1
-                gestion.productos.append(Producto(id_producto, nombre, precio, categoria, stock))
-                gestion.guardar_datos()
+            if id_categoria in sistema.categorias.categorais:
+                sistema.productos.agregar(nombre, precio, sistema.categorias.categorias[id_categoria], stock)
                 print("Producto agregado.")
             else:
                 print("Categoría no encontrada.")
@@ -286,41 +281,33 @@ def menu_administrador():
             telefono = input("Teléfono: ")
             direccion = input("Dirección: ")
             correo = input("Correo: ")
-            for cat in gestion.categorias:
-                print(f"{cat.id_categoria} - {cat.nombre}")
-            id_categoria = int(input("ID de la categoría principal del proveedor: "))
-            id_proveedor = len(gestion.proveedores) + 1
-            gestion.proveedores.append(Proveedor(id_proveedor, nombre, empresa, telefono, direccion, correo, id_categoria))
-            gestion.guardar_datos()
+            sistema.proveedores.agregar_proveedor(nombre, telefono, direccion, correo, empresa)
             print("Proveedor agregado.")
         elif opcion == "4":
+            id_empleado = len(sistema.empleados) + 1
             nombre = input("Nombre del empleado: ")
             telefono = input("Teléfono: ")
             direccion = input("Dirección: ")
             correo = input("Correo: ")
-            id_empleado = len(gestion.empleados) + 1
-            gestion.empleados.append(Empleado(id_empleado, nombre, telefono, direccion, correo))
-            gestion.guardar_datos()
+            sistema.empleados[id_empleado] = Empleado(id_empleado, nombre, telefono, direccion, correo)
             print("Empleado agregado.")
         elif opcion == "5":
             print("\n=== CATEGORÍAS ===")
-            for c in gestion.categorias:
-                print(f"{c.id_categoria} - {c.nombre}")
+            sistema.categorias.listar()
             print("\n=== PRODUCTOS ===")
-            for p in gestion.productos:
-                print(f"{p.id_producto} - {p.nombre} - Precio: Q{p.precio} - Stock: {p.stock} - Categoría: {p.categoria.nombre}")
+            sistema.productos.listar()
             print("\n=== PROVEEDORES ===")
-            for pr in gestion.proveedores:
+            for pr in sistema.proveedores.proveedores:
                 print(f"{pr.id_proveedor} - {pr.nombre} - Empresa: {pr.empresa}")
             print("\n=== EMPLEADOS ===")
-            for e in gestion.empleados:
+            for e in sistema.empleados.valuaes():
                 print(f"{e.id_empleado} - {e.nombre}")
         elif opcion == "6":
             break
         else:
             print("Opción inválida.")
 
-def menu_empleado():
+def menu_empleado(sistema):
     while True:
         print("\n=== MENÚ EMPLEADO ===")
         print("1. Pagar compras a proveedores")
@@ -330,19 +317,20 @@ def menu_empleado():
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
-            print("Esta opción procesaría pagos a proveedores (simulación).")
+            id_producto = int(input("ID de producto: "))
+            cantidad = int(input("Cantidad: "))
+            sistema.registrar_compra(id_producto, cantidad)
         elif opcion == "2":
-            for p in gestion.productos:
-                print(f"{p.id_producto} - {p.nombre} - Stock: {p.stock}")
+            sistema.productos.listar()
         elif opcion == "3":
-            for pr in gestion.proveedores:
+            for pr in sistema.proveedores.proveedores:
                 print(f"{pr.id_proveedor} - {pr.nombre} - Empresa: {pr.empresa}")
         elif opcion == "4":
             break
         else:
             print("Opción inválida.")
 
-def menu_cajero():
+def menu_cajero(sistema):
     while True:
         print("\n=== MENÚ CAJERO ===")
         print("1. Agregar cliente")
@@ -358,11 +346,10 @@ def menu_cajero():
             telefono = input("Teléfono: ")
             direccion = input("Dirección: ")
             correo = input("Correo: ")
-            gestion.clientes.append(Cliente(nit, nombre, telefono, direccion, correo))
-            gestion.guardar_datos()
+            sistema.clientes.append(Cliente(nit, nombre, telefono, direccion, correo))
             print("Cliente agregado.")
         elif opcion == "2":
-            menu_cliente()
+            menu_cliente(sistema)
         elif opcion == "3":
             for p in gestion.productos:
                 print(f"{p.id_producto} - {p.nombre} - Precio: Q{p.precio} - Stock: {p.stock}")
